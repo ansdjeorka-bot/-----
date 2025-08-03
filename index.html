@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>거래처 방문 관리</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.1.1",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.1/",
+    "react/": "https://esm.sh/react@^19.1.1/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.12.0",
+    "firebase/app": "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js",
+    "firebase/database": "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js",
+    "firebase/": "https://esm.sh/firebase@^12.0.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+    <script type="module">
+      // Firebase는 firebaseService.ts에서 초기화되므로 여기서는 제거합니다.
+    </script>
+  </body>
+</html>
