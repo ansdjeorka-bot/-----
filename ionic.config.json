@@ -1,5 +1,6 @@
 {
   "name": "visit",
   "integrations": {},
-  "type": "react-vite"
+  "type": "react-vite",
+  "id": "8ec604dd"
 }
