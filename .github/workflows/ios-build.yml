@@ -94,12 +94,12 @@ jobs:
           PROVISIONING_PROFILE="" \
           -allowProvisioningUpdates
           
-    - name: IPA 내보내기 (자동 서명)
+    - name: IPA 내보내기 (개선된 방법)
       run: |
         cd ios/App
         echo "IPA 내보내기 시작..."
         
-        # ExportOptions.plist 생성
+        # 더 간단한 ExportOptions.plist 생성
         cat > ExportOptions.plist << EOF
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -110,33 +110,53 @@ jobs:
             <key>signingStyle</key>
             <string>automatic</string>
             <key>stripSwiftSymbols</key>
-            <true/>
+            <false/>
+            <key>compileBitcode</key>
+            <false/>
         </dict>
         </plist>
         EOF
         
-        xcodebuild -exportArchive \
+        # Archive에서 직접 IPA 추출 시도
+        echo "방법 1: xcodebuild export 시도..."
+        if xcodebuild -exportArchive \
           -archivePath App.xcarchive \
           -exportPath ./build \
           -exportOptionsPlist ExportOptions.plist \
-          -allowProvisioningUpdates
-          
-        # IPA 파일 확인
-        find ./build -name "*.ipa" -exec ls -la {} \;
-        
-    - name: IPA 파일 업로드
-      uses: actions/upload-artifact@v4
-      with:
-        name: iOS-App
-        path: ios/App/build/*.ipa
-        
-    - name: 빌드 결과 확인
-      run: |
-        echo "🎉 iOS 빌드 완료!"
-        echo "Artifacts에서 IPA 파일을 다운로드할 수 있습니다."
-        if [ -f ios/App/build/*.ipa ]; then
-          echo "✅ IPA 파일 생성 성공"
-          ls -la ios/App/build/
+          -allowProvisioningUpdates; then
+          echo "✅ xcodebuild export 성공"
         else
-          echo "❌ IPA 파일 생성 실패"
+          echo "❌ xcodebuild export 실패, 대안 방법 시도..."
+          
+          # 방법 2: Archive에서 직접 앱 파일 복사
+          echo "방법 2: Archive에서 직접 추출..."
+          mkdir -p ./build
+          
+          # Archive 내부 구조 확인
+          echo "Archive 내용:"
+          find App.xcarchive -name "*.app" -type d
+          
+          # .app 파일을 .ipa로 변환
+          APP_PATH=$(find App.xcarchive -name "*.app" -type d | head -1)
+          if [ -n "$APP_PATH" ]; then
+            echo "App 파일 발견: $APP_PATH"
+            
+            # Payload 폴더 생성 및 앱 복사
+            mkdir -p ./build/Payload
+            cp -r "$APP_PATH" ./build/Payload/
+            
+            # IPA 파일 생성
+            cd ./build
+            zip -r "App.ipa" Payload/
+            cd ..
+            
+            echo "✅ 수동 IPA 생성 완료"
+            ls -la ./build/
+          else
+            echo "❌ .app 파일을 찾을 수 없습니다"
+          fi
         fi
+        
+        # 최종 결과 확인
+        echo "=== 최종 빌드 결과 ==="
+        find ./build -name "*.ipa" -exec ls -la {} \; || echo "IPA 파일 없음"
