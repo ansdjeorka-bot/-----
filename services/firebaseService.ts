@@ -70,11 +70,11 @@ export const deleteClient = (userId: string, day: DayOfWeek, id: string) => {
 
 // --- Auth Functions ---
 
-export const signUpWithEmailAndPassword = (email, password) => {
+export const signUpWithEmailAndPassword = (email: string, password: string) => {
     return auth.createUserWithEmailAndPassword(email, password);
 };
 
-export const signInWithEmailAndPassword = (email, password) => {
+export const signInWithEmailAndPassword = (email: string, password: string) => {
     return auth.signInWithEmailAndPassword(email, password);
 };
 

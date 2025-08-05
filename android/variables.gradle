@@ -1,13 +1,7 @@
 ext {
     minSdkVersion = 23
     compileSdkVersion = 35
-    targetSdkVersion = 33
-    
-    // Gradle 및 Java 버전 설정 (Capacitor 동기화 시 사용)
-    gradlePluginVersion = '8.5.0'
-    javaSourceCompatibility = JavaVersion.VERSION_17
-    javaTargetCompatibility = JavaVersion.VERSION_17
-    
+    targetSdkVersion = 35
     androidxActivityVersion = '1.9.2'
     androidxAppCompatVersion = '1.7.0'
     androidxCoordinatorLayoutVersion = '1.2.0'

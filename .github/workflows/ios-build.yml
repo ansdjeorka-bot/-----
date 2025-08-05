@@ -1,0 +1,68 @@
+name: iOS Build
+
+# 수동 트리거 또는 push 시 실행
+on:
+  workflow_dispatch:  # GitHub에서 수동으로 실행 가능
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build-ios:
+    runs-on: macos-latest  # macOS에서만 iOS 빌드 가능
+    
+    steps:
+    - name: Checkout 코드
+      uses: actions/checkout@v4
+      
+    - name: Node.js 설정
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 의존성 설치
+      run: npm install
+      
+    - name: 웹 빌드
+      run: npm run build
+      
+    - name: Capacitor iOS 플랫폼 추가/동기화
+      run: |
+        npx cap add ios || true  # 이미 있으면 오류 무시
+        npx cap sync ios
+        
+    - name: iOS 프로젝트 정보 확인
+      run: |
+        ls -la ios/
+        ls -la ios/App/
+        
+    # 🚨 여기서부터는 Apple Developer 계정과 인증서가 필요합니다!
+    # 아래 단계들은 Apple Developer 계정 설정 후에 활성화하세요.
+    
+    # - name: Apple Developer 인증서 설치
+    #   run: |
+    #     # Apple Developer 계정에서 다운로드한 인증서 설치
+    #     # 여기에 인증서 설치 스크립트 추가 예정
+    #     
+    # - name: iOS 빌드 (Archive)
+    #   run: |
+    #     cd ios/App
+    #     xcodebuild -workspace App.xcworkspace \
+    #                -scheme App \
+    #                -configuration Release \
+    #                -archivePath App.xcarchive \
+    #                archive
+    #                
+    # - name: IPA 내보내기
+    #   run: |
+    #     cd ios/App
+    #     xcodebuild -exportArchive \
+    #                -archivePath App.xcarchive \
+    #                -exportOptionsPlist ../../ExportOptions.plist \
+    #                -exportPath ./
+    #                
+    # - name: IPA 파일 업로드
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: iOS-App
+    #     path: ios/App/*.ipa

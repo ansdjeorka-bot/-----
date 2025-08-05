@@ -1,8 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace 'com.clientvisit.manager'
+    namespace "com.clientvisit.manager"
     compileSdk rootProject.ext.compileSdkVersion
+    
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    
     defaultConfig {
         applicationId "com.clientvisit.manager"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -16,11 +22,6 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
-    }
-    
     buildTypes {
         release {
             minifyEnabled false
@@ -30,11 +31,13 @@ android {
 }
 
 repositories {
-    google()
-    mavenCentral()
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
 }
 
 dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
     implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
@@ -54,4 +57,25 @@ try {
     }
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
+
+// ⚠️ 중요한 Java 버전 해결책 - 절대 삭제하지 마세요! ⚠️
+// 
+// 문제: capacitor.build.gradle이 자동으로 Java 21로 설정됨
+// 해결: 여기서 Java 17로 재설정해서 "덮어쓰기"
+//
+// capacitor.build.gradle은 Capacitor가 자동 생성하는 파일이라:
+// 1. 수정해도 sync할 때마다 초기화됨
+// 2. 항상 Java 21로 되돌아감
+// 3. "DO NOT EDIT" 주석이 있어도 어쩔 수 없음
+//
+// 그래서 이 방법(마지막에 재설정)이 유일한 해결책입니다.
+// Java 17을 유지해야 "invalid source release: 21" 에러를 피할 수 있음.
+//
+// 🎯 이 설정을 삭제하면 빌드 에러 발생하니 절대 건드리지 마세요!
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17  // Java 17 강제 적용
+        targetCompatibility JavaVersion.VERSION_17  // Java 17 강제 적용
+    }
 }
