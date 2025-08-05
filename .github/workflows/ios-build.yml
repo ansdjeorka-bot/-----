@@ -17,8 +17,19 @@ jobs:
     - name: Node.js 설정
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'  # 🎯 18에서 20으로 변경!
         cache: 'npm'
+        
+    - name: 프로젝트 정보 확인
+      run: |
+        echo "Node.js 버전:"
+        node --version
+        echo "npm 버전:"
+        npm --version
+        echo "현재 디렉토리:"
+        pwd
+        echo "파일 목록:"
+        ls -la
         
     - name: 의존성 설치
       run: npm install
@@ -26,15 +37,31 @@ jobs:
     - name: 웹 빌드
       run: npm run build
       
-    - name: Capacitor iOS 플랫폼 추가/동기화
+    - name: Capacitor 버전 확인
+      run: npx cap --version
+      
+    - name: Capacitor iOS 플랫폼 동기화
       run: |
-        npx cap add ios || true  # 이미 있으면 오류 무시
-        npx cap sync ios
+        if [ -d "ios" ]; then
+          echo "iOS 폴더가 이미 존재합니다. 동기화만 진행합니다."
+          npx cap sync ios
+        else
+          echo "iOS 폴더가 없습니다. 새로 추가합니다."
+          npx cap add ios
+        fi
         
     - name: iOS 프로젝트 정보 확인
       run: |
-        ls -la ios/
-        ls -la ios/App/
+        if [ -d "ios" ]; then
+          echo "iOS 폴더 내용:"
+          ls -la ios/
+          if [ -d "ios/App" ]; then
+            echo "iOS App 폴더 내용:"
+            ls -la ios/App/
+          fi
+        else
+          echo "iOS 폴더가 생성되지 않았습니다."
+        fi
         
     # 🚨 여기서부터는 Apple Developer 계정과 인증서가 필요합니다!
     # 아래 단계들은 Apple Developer 계정 설정 후에 활성화하세요.
