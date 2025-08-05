@@ -160,3 +160,24 @@ jobs:
         # 최종 결과 확인
         echo "=== 최종 빌드 결과 ==="
         find ./build -name "*.ipa" -exec ls -la {} \; || echo "IPA 파일 없음"
+        
+    - name: IPA 파일 업로드
+      uses: actions/upload-artifact@v4
+      with:
+        name: iOS-App
+        path: ios/App/build/*.ipa
+        retention-days: 7
+        
+    - name: 빌드 결과 확인
+      run: |
+        echo "🎉 iOS 빌드 완료!"
+        echo "Artifacts에서 IPA 파일을 다운로드할 수 있습니다."
+        cd ios/App
+        if ls ./build/*.ipa 1> /dev/null 2>&1; then
+          echo "✅ IPA 파일 생성 성공"
+          ls -la ./build/
+          echo "파일 크기:"
+          du -h ./build/*.ipa
+        else
+          echo "❌ IPA 파일 생성 실패"
+        fi
