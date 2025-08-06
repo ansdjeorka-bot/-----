@@ -23,10 +23,10 @@ foreach ($filePath in $gradleFiles) {
         $content = $content -replace "gradle:8\.8\.\d+", "gradle:8.5.0"
         $content = $content -replace "gradle:8\.9\.\d+", "gradle:8.5.0"
         
-        # Java 버전을 17로 수정
-        $content = $content -replace "JavaVersion\.VERSION_21", "JavaVersion.VERSION_17"
-        $content = $content -replace "JavaVersion\.VERSION_23", "JavaVersion.VERSION_17"
-        $content = $content -replace "JavaVersion\.VERSION_25", "JavaVersion.VERSION_17"
+        # Java 버전을 21로 수정 (Java 17로 강제 변경하지 않음)
+        $content = $content -replace "JavaVersion\.VERSION_17", "JavaVersion.VERSION_21"
+        $content = $content -replace "JavaVersion\.VERSION_23", "JavaVersion.VERSION_21"
+        $content = $content -replace "JavaVersion\.VERSION_25", "JavaVersion.VERSION_21"
         
         # 변경사항이 있으면 저장
         if ($content -ne $originalContent) {
